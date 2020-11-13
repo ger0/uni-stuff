@@ -16,8 +16,7 @@ bool transfer(u8 id, Base<T>& from, Base<T>& to)
     if (from.isAt(id))
     {
 	to += from.at(id);
-	from -= id;
-	return true;
+	from -= id; return true;
     }
     else
 	return false;
@@ -109,7 +108,7 @@ int main()
 
 	printf("a) dokonaj rezerwacji\n");
 	printf("b) wyswietl zarezerwowane bilety\n");
-	printf("c) przestan rezerwowac bilet\n");
+	printf("c) usun rezerwowacje biletu\n");
 	printf("x) wyjdz\n");
 
 	fflush(stdin);
@@ -156,6 +155,7 @@ int main()
 			Date 	tempDate = Date{0, 0, 0, 0};
 			string	tempFrom = "0";
 			u16 estTime = 0;
+			u16 first = 0, last = 0;
 
 			while (input != 'N' && input != 'n' && input != '\n')
 			{
@@ -167,18 +167,31 @@ int main()
 
 			    if (flights.isAt(id))
 			    {
+				if (first == 0)
+				    first = id;
+				last = id;
+
 				ticket.push_back(flights.at(id));
+
 				tempFrom = flights.at(id).getPoint("destination");
 				tempDate = flights.at(id).getDate();
 				estTime	+= flights.at(id).getEstT();
+
 				flights -= id;
+
 			    }
 			    else if (cruises.isAt(id))
 			    {
+				if (first == 0)
+				    first = id;
+				last = id;
+
 				ticket.push_back(cruises.at(id));
+
 				tempFrom = cruises.at(id).getPoint("destination");
 				tempDate = cruises.at(id).getDate();
 				estTime	+= cruises.at(id).getEstT();
+
 				cruises -= id;
 			    }
 			    else 
@@ -195,7 +208,7 @@ int main()
 			    scanf("%c", &input);
 			    getchar();
 			}
-			ticket.parseInfo(estTime);	
+			ticket.parseInfo(estTime, first, last);	
 			rvCombined += ticket;
 			break;
 		    }
@@ -218,6 +231,10 @@ int main()
 	    case 'C':
 	    case 'c':
 	    {
+		rvCruise.draw();
+		rvFlight.draw();
+		rvCombined.draw();
+
 		u8 id = 0;
 		printf("podaj id biletu ktorego nie chcesz juz rezerwowac: \n");
 		
@@ -228,7 +245,22 @@ int main()
 
 		if (!transfer(id, rvFlight, flights) 
 		&& !transfer(id, rvCruise, cruises))
-		    printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
+		{
+		    if (rvCombined.isAt(id))
+		    {
+			for (unsigned i = 0; i < rvCombined.at(id).len("Flight"); i++)
+			{
+			    flights += rvCombined.at(id).popF(i);
+			}
+			for (unsigned i = 0; i < rvCombined.at(id).len("Cruise"); i++)
+			{
+			    cruises += rvCombined.at(id).popC(i);
+			}
+			rvCombined -= id;
+		    }
+		    else 
+			printf("Nie ma takiego indeksu!\n");
+		}
 		break;
 	    }
 	}

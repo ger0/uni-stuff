@@ -12,6 +12,9 @@ Ticket::Ticket(u16 _nr, u16 _est, Date _date, Type _type,
 {
 }
 
+void Ticket::printThrough()
+{}
+
 std::string Ticket::getPoint(std::string point)
 {
     if (point == "destination")

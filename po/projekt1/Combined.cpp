@@ -6,50 +6,72 @@ Combined::Combined(u16 _nr, u16 _est, Date _date, Type _type,
 
 void Combined::push_back(Flight ticket)
 {
+    through.push_back(ticket.getPoint("destination"));
     seqF.push_back(ticket);
 }
 
 void Combined::push_back(Cruise ticket)
 {
+    through.push_back(ticket.getPoint("destination"));
     seqC.push_back(ticket);
 }
 
-bool Combined::parseInfo(u16 estT)
+void Combined::parseInfo(u16 estT, u16 first, u16 last)
 {
-    if (isDateGreater(seqC.front().getDate(), seqF.front().getDate()))
+    if (seqF.size() > 0)
     {
-	nr	= seqC.front().getNr(); 
-	estTime = seqC.front().getEstT();
-	date 	= seqC.front().getDate();
-
-	start = seqC.front().getPoint("start");
-
+	if (seqF.front().getNr() == first)
+	{
+	    nr = seqF.front().getNr();
+	    date = seqF.front().getDate();
+	    start = seqF.front().getPoint("start");
+	}
+	if (seqF.back().getNr() == last)
+	{
+	    destination = seqF.back().getPoint("destination");
+	}
     }
-    else
+    if (seqC.size() > 0)
     {
-	nr	= seqF.front().getNr(); 
-	estTime = seqF.front().getEstT();
-	date 	= seqF.front().getDate();
-
-	start = seqF.front().getPoint("start");
+	if (seqC.front().getNr() == first)
+	{
+	    nr = seqC.front().getNr();
+	    date = seqC.front().getDate();
+	    start = seqC.front().getPoint("start");
+	}
+	if (seqC.back().getNr() == last)
+	{
+	    destination = seqC.back().getPoint("destination");
+	}
     }
-
-    if (isDateGreater(seqF.back().getDate(), seqF.back().getDate()))
-	destination = seqF.back().getPoint("destination");
-    else
-	destination = seqC.back().getPoint("destination");
     estTime = estT;
-    return true;
 }
 
-Flight Combined::pop()
+Flight Combined::popF(unsigned i)
 {
-    Flight temp = seqF.back();
-    seqF.pop_back();
+    Flight temp = seqF[i];
+    return temp;
+}
+Cruise Combined::popC(unsigned i)
+{
+    Cruise temp = seqC[i];
     return temp;
 }
 
-Cruise Combined::pop()
+unsigned Combined::len(string type)
 {
+    if (type == "Flight")
+	return seqF.size();
+    else if (type == "Cruise")
+	return seqC.size();
+    else 
+	return 0;
 }
 
+void Combined::printThrough()
+{
+    printf("Przez miasta:[");
+    for (unsigned i = 0; i < through.size() - 1; i++)
+	printf("%s, ", through[i].c_str());
+    printf("]\n");
+}

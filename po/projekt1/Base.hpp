@@ -22,16 +22,7 @@ public:
 	    
 	if (idMap.size() != 0)
 	{
-	    if (typeid(T) == typeid(Cruise))
-		printf("-- REJSY -----------------------------------------------------------------\n");
-
-	    else if (typeid(T) == typeid(Flight))
-		printf("--- LOTY -----------------------------------------------------------------\n");
-
-	    else if (typeid(T) == typeid(Combined))
-		printf("-- KOMBINOWANE -----------------------------------------------------------\n");
-
-	    printf("| ID | START         CEL        | GODZ | DATA | CZAS[h] \n");
+	    bool isFirst = true;
 	    for (auto i = idMap.begin(); i != idMap.end(); ++i)
 	    {
 		if (date != NULL && from != NULL)
@@ -43,6 +34,22 @@ public:
 		    }
 		}
 
+		if (isFirst)
+		{
+		    if (typeid(T) == typeid(Cruise))
+			printf("-- REJSY -----------------------------------------------------------------\n");
+
+		    else if (typeid(T) == typeid(Flight))
+			printf("--- LOTY -----------------------------------------------------------------\n");
+
+		    else if (typeid(T) == typeid(Combined))
+			printf("-- KOMBINOWANE -----------------------------------------------------------\n");
+
+		    printf("| ID | START         CEL        | GODZ  | DATA       | CZAS |  \n");
+		    printf("--------------------------------------------------------------------------\n");
+		    isFirst = false;
+		}
+
 		printf("| %-3u", (unsigned)i->second.getNr());
 		printf("| %-10s ->", i->second.getPoint("start").c_str());
 		printf(" %-10s ", i->second.getPoint("destination").c_str());
@@ -50,10 +57,11 @@ public:
 		printf("| %-2u", unsigned(i->second.getDate().day)); 
 		printf("-%-2u", unsigned(i->second.getDate().month));
 		printf("-%-2ur. |", unsigned(i->second.getDate().year));
-		printf("-%-3ur. |", unsigned(i->second.getEstT()));
+		printf("%-4uh |", unsigned(i->second.getEstT()));
 		printf("\n");
+		i->second.printThrough();
 	    }
-	    printf("--------------------------------------------------------------------------\n\n");
+	    printf("\n");
 	}
 	return true;
     }

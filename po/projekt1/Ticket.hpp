@@ -18,6 +18,7 @@ protected:
 public:
     Ticket(u16 _nr, u16 _est, Date _date, Type _type, string strt, string dest);
     virtual ~Ticket() {};
+    virtual void printThrough();
 
     string getPoint(string);	// "start" or "destination" !
     u16		getNr();

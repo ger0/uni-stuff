@@ -12,7 +12,7 @@
 class Combined: public Ticket
 {
 private:
-    std::vector<u8>	id;
+    std::vector<string> through;
     std::vector<Cruise>	seqC;
     std::vector<Flight> seqF;
 public:
@@ -21,8 +21,12 @@ public:
     void push_back(Flight);
     void push_back(Cruise);
 
-    Flight pop();
-    Cruise pop();
+    Flight popF(unsigned i);
+    Cruise popC(unsigned i);
 
-    bool parseInfo(u16 estT);
+    // estimated time, first iterator, last iterator (to vectors)
+    void parseInfo(u16 estT, u16 first, u16 last);
+
+    unsigned len(string type);
+    void printThrough();
 };
