@@ -3,6 +3,7 @@
 u16 Ticket::getNr()	{ return nr;	}
 u16 Ticket::getType()	{ return type;	}
 Date Ticket::getDate()	{ return date;	}
+u16 Ticket::getEstT()	{ return estTime; }
 
 Ticket::Ticket(u16 _nr, u16 _est, Date _date, Type _type, 
 	std::string strt, std::string dest):

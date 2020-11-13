@@ -22,6 +22,7 @@ public:
     string getPoint(string);	// "start" or "destination" !
     u16		getNr();
     u16		getType();
+    u16		getEstT();
     Date	getDate();
 };
 

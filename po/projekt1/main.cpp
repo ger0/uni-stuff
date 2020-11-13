@@ -21,7 +21,6 @@ bool transfer(u8 id, Base<T>& from, Base<T>& to)
     }
     else
 	return false;
-
 }
 
 // reads text data
@@ -127,6 +126,7 @@ int main()
 		printf("Podaj typ biletu ([Z]wykly, [K]ombinowany, [E] - wyjdz) : ");
 		u8 id;
 
+		fflush(stdin);
 		scanf("%c", &input);
 		getchar();
 
@@ -138,6 +138,7 @@ int main()
 		    {
 			printf("Podaj id biletu do rezerwacji: \n");
 
+			fflush(stdin);
 			scanf("%" SCNu8, &id);
 			getchar();
 
@@ -150,17 +151,52 @@ int main()
 		    case 'K':
 		    case 'k':
 		    {
-			while (input != 'E' || input != 'e')
+			Combined ticket(0, 0, Date{0, 0, 0, 0}, combined, "X", "X");
+
+			Date 	tempDate = Date{0, 0, 0, 0};
+			string	tempFrom = "0";
+			u16 estTime = 0;
+
+			while (input != 'N' && input != 'n' && input != '\n')
 			{
 			    printf("Podaj id biletu do rezerwacji: \n");
 
+			    fflush(stdin);
 			    scanf("%" SCNu8, &id);
 			    getchar();
 
-			    if (!transfer(id, flights, rvFlight) 
-			    && !transfer(id, cruises, rvCruise))
-				printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
+			    if (flights.isAt(id))
+			    {
+				ticket.push_back(flights.at(id));
+				tempFrom = flights.at(id).getPoint("destination");
+				tempDate = flights.at(id).getDate();
+				estTime	+= flights.at(id).getEstT();
+				flights -= id;
+			    }
+			    else if (cruises.isAt(id))
+			    {
+				ticket.push_back(cruises.at(id));
+				tempFrom = cruises.at(id).getPoint("destination");
+				tempDate = cruises.at(id).getDate();
+				estTime	+= cruises.at(id).getEstT();
+				cruises -= id;
+			    }
+			    else 
+				printf("Podane id nie istnieje!\n");
+			    
+			    // print available:
+			    printf("Dostepne bilety:\n");
+			    cruises.draw(&tempDate, &tempFrom);
+			    flights.draw(&tempDate, &tempFrom);
+
+			    printf("Czy chcesz kontynuowac? [Y / n]\n");
+
+			    fflush(stdin);
+			    scanf("%c", &input);
+			    getchar();
 			}
+			ticket.parseInfo(estTime);	
+			rvCombined += ticket;
 			break;
 		    }
 		    default:
@@ -184,7 +220,8 @@ int main()
 	    {
 		u8 id = 0;
 		printf("podaj id biletu ktorego nie chcesz juz rezerwowac: \n");
-
+		
+		fflush(stdin);
 		scanf("%" SCNu8, &id);
 		getchar();
 		printf("podany: %u\n", (unsigned)id);

@@ -18,4 +18,11 @@ private:
 public:
     Combined(u16 _nr, u16 _est, Date _date, Type _type,
 	    string strt, string dest);
+    void push_back(Flight);
+    void push_back(Cruise);
+
+    Flight pop();
+    Cruise pop();
+
+    bool parseInfo(u16 estT);
 };
