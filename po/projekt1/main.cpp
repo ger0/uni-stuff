@@ -64,25 +64,26 @@ bool dataLoader(Base<Cruise>* cruises, Base<Flight>* flights, Base<Combined>* co
 	    if (id == 0)
 		return true;
 
-	    else if (typ == 'c')
+	    switch(typ)
 	    {
-		fscanf(pFile, "%s", comPlac);
-		*cruises += Cruise((u16)id, (u16)est, date, cruise, 
-				string(strStart), string(strDest), 
-				string(comName), string(comPlac));
+		case 'X':
+		case 'c':
+		{
+		    fscanf(pFile, "%s", comPlac);
+		    *cruises += Cruise((u16)id, (u16)est, date, cruise, 
+				    string(strStart), string(strDest), 
+				    string(comName), string(comPlac));
+		    break;
+		}
+		case 'f':
+		{
+		    fscanf(pFile, "%u", &comSeat);
+		    *flights += Flight((u16)id, (u16)est, date, flight, 
+				    string(strStart), string(strDest), 
+				    string(comName), u8(comSeat));
+		    break;
+		}
 	    }
-	    else if (typ == 'f')
-	    {
-		fscanf(pFile, "%u", &comSeat);
-		*flights += Flight((u16)id, (u16)est, date, flight, 
-				string(strStart), string(strDest), 
-				string(comName), u8(comSeat));
-	    }
-	    else if (typ == 'X' && combined != NULL)
-	    {
-
-
-	    }	
 	}
 	fclose(pFile);
     }
@@ -140,17 +141,8 @@ int main()
 			scanf("%" SCNu8, &id);
 			getchar();
 
-			if (flights.isAt(id))
-			{
-			    rvFlight += flights.at(id);
-			    flights  -= id; 
-			}
-			else if (cruises.isAt(id))
-			{
-			    rvCruise += cruises.at(id);
-			    cruises  -= id; 
-			}
-			else 
+			if (!transfer(id, flights, rvFlight) 
+			&& !transfer(id, cruises, rvCruise))
 			    printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
 			break;
 		    }
@@ -165,17 +157,8 @@ int main()
 			    scanf("%" SCNu8, &id);
 			    getchar();
 
-			    if (flights.isAt(id))
-			    {
-				rvFlight += flights.at(id);
-				flights  -= id; 
-			    }
-			    else if (cruises.isAt(id))
-			    {
-				rvCruise += cruises.at(id);
-				cruises  -= id; 
-			    }
-			    else 
+			    if (!transfer(id, flights, rvFlight) 
+			    && !transfer(id, cruises, rvCruise))
 				printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
 			}
 			break;
@@ -206,19 +189,9 @@ int main()
 		getchar();
 		printf("podany: %u\n", (unsigned)id);
 
-		if (rvCruise.isAt(id))
-		{
-		    cruises += rvCruise.at(id);
-		    rvCruise -= id;
-		}
-		else if(rvFlight.isAt(id))
-		{
-		    flights += rvFlight.at(id);
-		    rvFlight -= id;
-		}
-		else
-		    printf("Wybrany identyfikator: %u nie istnieje w bazie danych!!\n",
-			    unsigned(id));
+		if (!transfer(id, rvFlight, flights) 
+		&& !transfer(id, rvCruise, cruises))
+		    printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
 		break;
 	    }
 	}
