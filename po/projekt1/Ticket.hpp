@@ -16,13 +16,12 @@ protected:
     string start;		// starting point
     string destination;		// final destination
 public:
-    Ticket(u16, u16, Date, Type, string, string);
+    Ticket(u16 _nr, u16 _est, Date _date, Type _type, string strt, string dest);
     virtual ~Ticket() {};
 
     string getPoint(string);	// "start" or "destination" !
     u16		getNr();
     u16		getType();
     Date	getDate();
-    virtual u8	getId() = 0;
 };
 

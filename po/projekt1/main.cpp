@@ -10,10 +10,25 @@
 #include "Types.hpp"
 #include "Base.hpp"
 
+template<class T>
+bool transfer(u8 id, Base<T>& from, Base<T>& to)
+{
+    if (from.isAt(id))
+    {
+	to += from.at(id);
+	from -= id;
+	return true;
+    }
+    else
+	return false;
+
+}
+
+// reads text data
 bool dataLoader(Base<Cruise>* cruises, Base<Flight>* flights, Base<Combined>* combined = NULL)
 {
     // buffering data
-    Date data; 
+    Date date; 
 
     unsigned id, est, time;
     unsigned tDay, tMonth, tYear;
@@ -38,13 +53,13 @@ bool dataLoader(Base<Cruise>* cruises, Base<Flight>* flights, Base<Combined>* co
 	    // ----------- ID | TYP | OD | DO | GODZ | CZAS TRWANIA | DATA(3) --------------
 	    fscanf(pFile, "%u %c %s %s %u ", &id, &typ, strStart, strDest, &time);
 	    fscanf(pFile, "%u %u %u %u", &est, &tDay, &tMonth, &tYear);
-	    // ---------------- seat/cabin | provicer/company ------------------------------
+	    // -- provider / company --
 	    fscanf(pFile, "%s ", comName);
 
-	    data.time = (u16)time;
-	    data.day = (u8)tDay;
-	    data.month = (u8)tMonth;
-	    data.year = (u8)tYear;
+	    date.time = (u16)time;
+	    date.day = (u8)tDay;
+	    date.month = (u8)tMonth;
+	    date.year = (u8)tYear;
 
 	    if (id == 0)
 		return true;
@@ -52,19 +67,20 @@ bool dataLoader(Base<Cruise>* cruises, Base<Flight>* flights, Base<Combined>* co
 	    else if (typ == 'c')
 	    {
 		fscanf(pFile, "%s", comPlac);
-		*cruises += Cruise((u16)id, (u16)est, data, cruise, 
+		*cruises += Cruise((u16)id, (u16)est, date, cruise, 
 				string(strStart), string(strDest), 
 				string(comName), string(comPlac));
 	    }
 	    else if (typ == 'f')
 	    {
 		fscanf(pFile, "%u", &comSeat);
-		*flights += Flight((u16)id, (u16)est, data, flight, 
+		*flights += Flight((u16)id, (u16)est, date, flight, 
 				string(strStart), string(strDest), 
 				string(comName), u8(comSeat));
 	    }
 	    else if (typ == 'X' && combined != NULL)
 	    {
+
 
 	    }	
 	}
@@ -75,64 +91,136 @@ bool dataLoader(Base<Cruise>* cruises, Base<Flight>* flights, Base<Combined>* co
 
 int main()
 {
+    // baza biletow
     Base<Cruise> cruises;
     Base<Flight> flights;
 
+    // baza biletow zarezerwowane
     Base<Cruise> rvCruise;
     Base<Flight> rvFlight;
+    Base<Combined> rvCombined;
    
     if (!dataLoader(&cruises, &flights))
 	return -1;
 
     char input = 0;
-
     while (input != 'x')
     {
-	printf("\n\na) dokonaj rezerwacji\n");
-	printf("b)   \nx) wyjdz\n");
 
+	printf("a) dokonaj rezerwacji\n");
+	printf("b) wyswietl zarezerwowane bilety\n");
+	printf("c) przestan rezerwowac bilet\n");
+	printf("x) wyjdz\n");
+
+	fflush(stdin);
 	scanf("%c", &input);
 	getchar();
 
-	if (input == 'a')
+	switch(input)
 	{
-	    cruises.draw();
-	    flights.draw();
-	    printf("Podaj typ biletu ([L]ot, [R]ejs, [K]ombinowany, X - wyjdz) : ");
-	    u8 id;
-
-	    scanf("%c", &input);
-	    getchar();
-
-	    if (input == 'L' || input == 'R' || input == 'K')
+	    case 'A':
+	    case 'a':
 	    {
-		printf("Podaj id biletu do rezerwacji: \n");
+		cruises.draw();
+		flights.draw();
+		printf("Podaj typ biletu ([Z]wykly, [K]ombinowany, [E] - wyjdz) : ");
+		u8 id;
+
+		scanf("%c", &input);
+		getchar();
+
+		switch(input)
+		{
+		    // ZWYKLY
+		    case 'Z':
+		    case 'z':
+		    {
+			printf("Podaj id biletu do rezerwacji: \n");
+
+			scanf("%" SCNu8, &id);
+			getchar();
+
+			if (flights.isAt(id))
+			{
+			    rvFlight += flights.at(id);
+			    flights  -= id; 
+			}
+			else if (cruises.isAt(id))
+			{
+			    rvCruise += cruises.at(id);
+			    cruises  -= id; 
+			}
+			else 
+			    printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
+			break;
+		    }
+		    // KOMBINOWANY
+		    case 'K':
+		    case 'k':
+		    {
+			while (input != 'E' || input != 'e')
+			{
+			    printf("Podaj id biletu do rezerwacji: \n");
+
+			    scanf("%" SCNu8, &id);
+			    getchar();
+
+			    if (flights.isAt(id))
+			    {
+				rvFlight += flights.at(id);
+				flights  -= id; 
+			    }
+			    else if (cruises.isAt(id))
+			    {
+				rvCruise += cruises.at(id);
+				cruises  -= id; 
+			    }
+			    else 
+				printf("Wybrany identyfikator nie istnieje w bazie danych!!\n");
+			}
+			break;
+		    }
+		    default:
+			break;
+		}
+		break;
+	    }
+	    case 'B':
+	    case 'b':
+	    {
+		rvCruise.draw();
+		rvFlight.draw();
+		rvCombined.draw();
+
+		printf("Nacisnij dowolny klawisz...\n");
+		getchar();
+		break;
+	    }
+	    case 'C':
+	    case 'c':
+	    {
+		u8 id = 0;
+		printf("podaj id biletu ktorego nie chcesz juz rezerwowac: \n");
 
 		scanf("%" SCNu8, &id);
 		getchar();
+		printf("podany: %u\n", (unsigned)id);
 
-		if (input == 'L')
+		if (rvCruise.isAt(id))
 		{
-		    rvFlight += flights.at(id);
-		    flights  -= id; 
+		    cruises += rvCruise.at(id);
+		    rvCruise -= id;
 		}
-		else if (input == 'R')
+		else if(rvFlight.isAt(id))
 		{
-		    rvCruise += cruises.at(id);
-		    cruises  -= id; 
+		    flights += rvFlight.at(id);
+		    rvFlight -= id;
 		}
-	    }
-	    else if (input == 'X')
+		else
+		    printf("Wybrany identyfikator: %u nie istnieje w bazie danych!!\n",
+			    unsigned(id));
 		break;
-	}
-	else if (input == 'b')
-	{
-	    printf("----------------- ZAREZERWOWANE ---------------------------------------------\n");
-	    rvCruise.draw();
-	    rvFlight.draw();
-
-	    printf("Nacisnij dowolny klawisz...\n");
-	    getchar();
+	    }
 	}
     }
 

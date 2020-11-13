@@ -7,4 +7,3 @@ Flight::Flight(u16 _nr, u16 _est, Date _date, Type _type,
 
 string	Flight::getCompany()	{ return company;	}
 u8	Flight::getSeat()	{ return seat;		}	
-u8	Flight::getId()		{ return id;		}

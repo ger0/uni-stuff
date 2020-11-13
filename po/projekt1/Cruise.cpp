@@ -7,4 +7,3 @@ Cruise::Cruise(u16 _nr, u16 _est, Date _date, Type _type,
 
 string 	Cruise::getProvider()	{ return provider;	}
 string 	Cruise::getCabin()	{ return cabin;		}	
-u8 	Cruise::getId()		{ return id;		}

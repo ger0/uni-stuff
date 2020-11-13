@@ -2,5 +2,5 @@ CC 	= clang
 LDFLAGS = -lstdc++
 CFLAGS	= -Wall -Wextra
 
-main: main.cpp Ticket.cpp Cruise.cpp Flight.cpp
+a.out: Ticket.cpp Combined.cpp Cruise.cpp Flight.cpp main.cpp
 	$(CC) $(LDFLAGS) $(CFLAGS) $? -o $@
