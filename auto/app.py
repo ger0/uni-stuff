@@ -3,22 +3,28 @@ import math
 beta  = 0.035 
 h0    = 0
 Qdc   = 0.05
+Qdl   = []
 A     = 1.5
-Tp    = 0.01
+Tp    = 0.1
 T     = 12 * 3600
 N     = T / Tp
+N     = int(N)
 hl    = []
 
-def Qd(n):
-    return (A * (hl[n + 1] - hl[n]) / Tp + beta * math.sqrt(hl[n]))
-
-def h(x):
-    if (x == 0):
+def h(n):
+    if (n == 0):
         hl.append(h0)
-        return h0
+        Qdl.append(Qdc)
     else:
-        hx = h(x)
-        hl.append((1 / A) * (-(beta) * math.sqrt(hx) + Qd(x - 1)) * Tp + hx)
-        return hl[-1]
+        hx = hl[n - 1]
+        hl.append((1 / A) * (-(beta) * math.sqrt(hx) + Qdl[n - 1]) * Tp + hx)
 
-print(h(N))
+        Qdl.append(A * (hl[n] - hl[n - 1]) / Tp + beta * math.sqrt(hl[n]))
+
+print(N)
+
+for n in range(N):
+    h(n)
+
+print(Qdl[-1])
+print(beta * math.sqrt(hl[-1]))
