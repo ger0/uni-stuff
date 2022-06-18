@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/userinfoHeader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:textSize="34sp" />
+
+        <TextView
+            android:id="@+id/userinfoData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/constPosts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="POSTY:" />
+
+        <ListView
+            android:id="@+id/postListview"
+            android:layout_width="match_parent"
+            android:layout_height="283dp"
+            android:minHeight="?android:attr/listPreferredItemHeight" />
+
+        <TextView
+            android:id="@+id/constTodos"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:paddingTop="16dp"
+            android:text="ZADANIA:" />
+
+        <ListView
+            android:id="@+id/taskListview"
+            android:layout_width="match_parent"
+            android:layout_height="220dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
