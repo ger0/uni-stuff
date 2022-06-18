@@ -1,0 +1,10 @@
+1 f Warszawa Gdansk 1600 1 11 11 20 airluft 55
+2 c Gdansk Szczecin 1700 24 11 11 20 SHK22 0H34
+3 f Szczecin Warszawa 1700 2 12 11 20 lotnick 55
+4 c Szczecin Kolobrzeg 1500 5 11 11 20 KKL33 0A01
+5 c Gdansk Kolobrzeg 1500 5 11 11 20 KKL23 0A09
+6 f Warszawa Londyn 1200 2 13 11 20 lotnick 51
+7 f Poznan Warszawa 1430 1 13 11 20 airluft 25
+8 c Kolobrzeg Szczecin 1300 5 15 11 20 KKL90 0B05
+0 EOF
+id typ, od, do, godz, czas podrozy, dzien, miesiac, rok, nazwa, miejsce
